@@ -9,6 +9,8 @@ typedef struct {
     char* ime;
 } Podaci;
 
+
+
 int main() {
     // Unos podataka korisnika
     Podaci podaci;
@@ -45,15 +47,57 @@ int main() {
     };
     prikaziSudoku(sudoku);
 
-    // Rješavanje Sudoku zadatka
-    int rjesenje = rjesiSudoku(sudoku);
+    // Odabir rješavanja Sudoku zadatka
+    int rjesavanje;
+    printf("Odaberite način rješavanja Sudoku zadatka:\n");
+    printf("1. Ručni unos brojeva\n");
+    printf("2. Automatsko rješavanje\n");
+    printf("3. Ispis ID-a korisnika\n");
+    printf("4. Ispis najboljeg vremena\n");
+    printf("Odabir: ");
+    scanf("%d", &rjesavanje);
+    ocistiUnos();
 
-    if (rjesenje) {
-        printf("Sudoku je riješen:\n");
+    // Izvršavanje odabranog koraka
+    switch (rjesavanje) {
+    case 1:
+        // Ručni unos brojeva
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                printf("Unesite broj za polje (%d, %d): ", i + 1, j + 1);
+                scanf("%d", &sudoku[i][j]);
+                ocistiUnos();
+            }
+        }
+
+        printf("Sudoku zadatak je unesen:\n");
         prikaziSudoku(sudoku);
-    }
-    else {
-        printf("Sudoku nije riješen.\n");
+        break;
+
+    case 2:
+        // Automatsko rješavanje
+        if (rjesiSudoku(sudoku)) {
+            printf("Sudoku je riješen:\n");
+            prikaziSudoku(sudoku);
+        }
+        else {
+            printf("Sudoku nije riješen.\n");
+        }
+        break;
+
+    case 3:
+        // Ispis ID-a korisnika
+        ispisiID(podaci);
+        break;
+
+    case 4:
+        // Ispis najboljeg vremena
+        ispisiNajboljeVrijeme(podaci);
+        break;
+
+    default:
+        printf("Pogrešan odabir. Program će se završiti.\n");
+        return 1;
     }
 
     // Odbrojavanje vremena
@@ -67,23 +111,7 @@ int main() {
         int preostalo = 300 - trajanje;
         int minuta = preostalo / 60;
         int sekunda = preostalo % 60;
-        printf("Preostalo vrijeme: %02d:%02d\n", minuta, sekunda);
-
-        // Provjerite je li Sudoku riješen i prekinite odbrojavanje ako je
-        if (rjesenje) {
-            printf("Čestitamo, Sudoku je riješen!\n");
-            break;
-        }
-
-        // Dodajte ovdje kod za ažuriranje sučelja s preostalim vremenom
-
-        // Simulacija korisnikovog unosa brojeva u Sudoku
-        printf("Unesite broj (1-9) i koordinate (redak, stupac) za unos (npr. 5 2 3): ");
-        int broj, redak, stupac;
-        scanf("%d %d %d", &broj, &redak, &stupac);
-        ocistiUnos();
-        sudoku[redak - 1][stupac - 1] = broj;
-        prikaziSudoku(sudoku);
+        printf("Preostalo vrijeme: %02d:%02d\r", minuta, sekunda);
     }
 
     // Spremanje vremena rješavanja Sudoku zadatka
