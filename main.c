@@ -3,125 +3,93 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
-typedef struct {
-    char* id;
-    char* ime;
-} Podaci;
-
-
+#include"header.h"
 
 int main() {
-    // Unos podataka korisnika
-    Podaci podaci;
-    podaci.id = "ABC123";  // Generiraj ID korisnika
-    printf("Unesite svoje ime: ");
-    char ime[100];
-    scanf("%s", ime);
-    ocistiUnos();
-    podaci.ime = malloc(strlen(ime) + 1);
-    strcpy(podaci.ime, ime);
 
-    // Spremanje podataka u datoteku
-    FILE* datoteka = fopen("podaci.txt", "a");
-    if (datoteka == NULL) {
-        printf("Pogreška pri otvaranju datoteke.\n");
-        return 1;
-    }
-    fprintf(datoteka, "%s %s\n", podaci.id, podaci.ime);
-    fclose(datoteka);
+	int sudoku[9][9] = {
+		{5, 3, 0, 0, 7, 0, 0, 0, 0},
+		{6, 0, 0, 1, 9, 5, 0, 0, 0},
+		{0, 9, 8, 0, 0, 0, 0, 6, 0},
+		{8, 0, 0, 0, 6, 0, 0, 0, 3},
+		{4, 0, 0, 8, 0, 3, 0, 0, 1},
+		{7, 0, 0, 0, 2, 0, 0, 0, 6},
+		{0, 6, 0, 0, 0, 0, 2, 8, 0},
+		{0, 0, 0, 4, 1, 9, 0, 0, 5},
+		{0, 0, 0, 0, 8, 0, 0, 7, 9}
+	};
+	prikaziSudoku(sudoku);
 
-    printf("Podaci su spremljeni u datoteku.\n");
+	int izbor;
+	Podaci podaci;
 
-    // Prikaz Sudoku ploče
-    int sudoku[9][9] = {
-        {5, 3, 0, 0, 7, 0, 0, 0, 0},
-        {6, 0, 0, 1, 9, 5, 0, 0, 0},
-        {0, 9, 8, 0, 0, 0, 0, 6, 0},
-        {8, 0, 0, 0, 6, 0, 0, 0, 3},
-        {4, 0, 0, 8, 0, 3, 0, 0, 1},
-        {7, 0, 0, 0, 2, 0, 0, 0, 6},
-        {0, 6, 0, 0, 0, 0, 2, 8, 0},
-        {0, 0, 0, 4, 1, 9, 0, 0, 5},
-        {0, 0, 0, 0, 8, 0, 0, 7, 9}
-    };
-    prikaziSudoku(sudoku);
+	printf("Dobrodošli u Sudoku program!\n");
+	printf("Odaberite opciju:\n");
+	printf("1. Novi korisnik\n");
+	printf("2. Prijašnji korisnik\n");
+	printf("Vaš odabir: ");
+	scanf("%d", &izbor);
+	ocistiUnos();
 
-    // Odabir rješavanja Sudoku zadatka
-    int rjesavanje;
-    printf("Odaberite način rješavanja Sudoku zadatka:\n");
-    printf("1. Ručni unos brojeva\n");
-    printf("2. Automatsko rješavanje\n");
-    printf("3. Ispis ID-a korisnika\n");
-    printf("4. Ispis najboljeg vremena\n");
-    printf("Odabir: ");
-    scanf("%d", &rjesavanje);
-    ocistiUnos();
+	if (izbor == 1) {
+		unesiIme(podaci.ime);
+		generirajID(podaci.id);
+		ispisiID(podaci.id);
+	}
+	else if (izbor == 2) {
+		printf("Unesite ID: ");
+		scanf("%s", podaci.id);
+		ocistiUnos();
+	}
+	else {
+		printf("Pogrešan odabir. Izlaz iz programa.\n");
+		return 0;
+	}
 
-    // Izvršavanje odabranog koraka
-    switch (rjesavanje) {
-    case 1:
-        // Ručni unos brojeva
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                printf("Unesite broj za polje (%d, %d): ", i + 1, j + 1);
-                scanf("%d", &sudoku[i][j]);
-                ocistiUnos();
-            }
-        }
+	do {
+		printf("\nOdaberite opciju:\n");
+		printf("1. Prikazi Sudoku zadatak\n");
+		printf("2. Automatski rjesi Sudoku\n");
+		printf("3. Ručni unos brojeva\n");
+		printf("4. Ispisi ID\n");
+		printf("5. Ispisi najbolje vrijeme\n");
+		printf("6. Obrisi sve podatke\n");
+		printf("7. Izlaz iz programa\n");
+		printf("Vaš odabir: ");
+		scanf("%d", &izbor);
+		ocistiUnos();
 
-        printf("Sudoku zadatak je unesen:\n");
-        prikaziSudoku(sudoku);
-        break;
+		switch (izbor) {
+		case 1:
+			prikaziSudoku(sudoku);
+			break;
+		case 2:
+			rjesiSudoku(sudoku);
+			printf("\nSudoku je riješen!\n");
+			prikaziSudoku(sudoku);
+			break;
+		case 3:
+			unesiBrojeve(sudoku);
+			break;
+		case 4:
+			ispisiID(podaci.id);
+			break;
+		case 5:
+			ispisiNajboljeVrijeme(podaci);
+			break;
+		case 6:
+			//obrisiPodatke();
+			printf("Svi podaci su obrisani.\n");
+			break;
+		case 7:
+			printf("Hvala što ste koristili program. Doviđenja!\n");
+			break;
+		default:
+			printf("Pogrešan odabir. Molimo odaberite ponovno.\n");
+			break;
+		}
 
-    case 2:
-        // Automatsko rješavanje
-        if (rjesiSudoku(sudoku)) {
-            printf("Sudoku je riješen:\n");
-            prikaziSudoku(sudoku);
-        }
-        else {
-            printf("Sudoku nije riješen.\n");
-        }
-        break;
+	} while (izbor != 7);
 
-    case 3:
-        // Ispis ID-a korisnika
-        ispisiID(podaci);
-        break;
-
-    case 4:
-        // Ispis najboljeg vremena
-        ispisiNajboljeVrijeme(podaci);
-        break;
-
-    default:
-        printf("Pogrešan odabir. Program će se završiti.\n");
-        return 1;
-    }
-
-    // Odbrojavanje vremena
-    time_t pocetak = time(NULL);
-    int trajanje = 0;
-    while (trajanje < 300) {  // Ograničenje na 5 minuta (300 sekundi)
-        time_t trenutno = time(NULL);
-        trajanje = trenutno - pocetak;
-
-        // Prikaz preostalog vremena
-        int preostalo = 300 - trajanje;
-        int minuta = preostalo / 60;
-        int sekunda = preostalo % 60;
-        printf("Preostalo vrijeme: %02d:%02d\r", minuta, sekunda);
-    }
-
-    // Spremanje vremena rješavanja Sudoku zadatka
-    datoteka = fopen("podaci.txt", "a");
-    if (datoteka == NULL) {
-        printf("Pogreška pri otvaranju datoteke.\n");
-        return 1;
-    }
-    fprintf(datoteka, "%s %d\n", podaci.id, trajanje);
-    fclose(datoteka);
-
-    return 0;
+	return 0;
 }
