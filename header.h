@@ -16,7 +16,7 @@ void unesiIme(char ime[]);
 void prikaziSudoku(int sudoku[9][9]);
 void generirajID(char id[]);
 int rjesiSudoku(int sudoku[9][9]);
-void unesiBrojeve(int sudoku[9][9]);
+void rucniUnosSudoku(int sudoku[9][9]);
 void spremiVrijeme(const Podaci podaci);
 void ispisiID(const char id[]);
 void ispisiNajboljeVrijeme(const Podaci podaci);

@@ -3,8 +3,8 @@
 #include <stdlib.h>
 
 
-#define MAX_IME 50
-#define MAX_ID 10
+#define MAX_IME 20
+#define MAX_ID 5
 
 typedef struct {
 	char ime[MAX_IME];
@@ -49,7 +49,7 @@ void prikaziSudoku(int sudoku[9][9]) {
 
 void generirajID(char id[]) {
 	srand(time(NULL));
-	const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	const int charsetSize = sizeof(charset) - 1;
 	for (int i = 0; i < MAX_ID - 1; i++) {
 		id[i] = charset[rand() % charsetSize];
@@ -120,14 +120,40 @@ int provjeriBroj(int sudoku[9][9], int redak, int stupac, int broj) {
 	return 1;  // Broj je ispravan
 }
 
-void unesiBrojeve(int sudoku[9][9]) {
-	printf("Unesite brojeve za Sudoku (0 za prazno polje):\n");
-	for (int i = 0; i < 9; i++) {
-		for (int j = 0; j < 9; j++) {
-			printf("Element [%d][%d]: ", i, j);
-			scanf("%d", &sudoku[i][j]);
+void rucniUnosSudoku(int sudoku[9][9]) {
+	time_t pocetak = time(NULL);
+	time_t trenutnoVrijeme = pocetak;
+	int praznoPolje[2];
+
+	while (!pronadiPraznoPolje(sudoku, praznoPolje)) {
+		trenutnoVrijeme = time(NULL);
+		if (trenutnoVrijeme - pocetak >= 420) {  // 7 minuta = 420 sekundi
+			printf("Vrijeme je isteklo.\n");
+			return;
 		}
+
+		prikaziSudoku(sudoku);
+
+		int redak, stupac, broj;
+
+		printf("Unesite redak (1-9), stupac (1-9) i broj (1-9) odvojene razmakom: ");
+		scanf("%d %d %d", &redak, &stupac, &broj);
 		ocistiUnos();
+
+		redak--;
+		stupac--;
+
+		if (redak < 0 || redak >= 9 || stupac < 0 || stupac >= 9 || broj < 1 || broj > 9) {
+			printf("Nevažeći unos.\n");
+			continue;
+		}
+
+		if (!provjeriBroj(sudoku, redak, stupac, broj)) {
+			printf("Nevažeći broj.\n");
+			continue;
+		}
+
+		sudoku[redak][stupac] = broj;
 	}
 }
 
