@@ -83,20 +83,6 @@ int rjesiSudoku(int sudoku[9][9]) {
 	return 0;  // Sudoku nije riješen
 }
 
-int pronadiPraznoPolje(int sudoku[9][9], int praznoPolje[2]) {
-	for (int i = 0; i < 9; i++) {
-		for (int j = 0; j < 9; j++) {
-			if (sudoku[i][j] == 0) {
-				praznoPolje[0] = i;
-				praznoPolje[1] = j;
-				return 1;
-			}
-		}
-	}
-
-	return 0;  // Nema praznih polja
-}
-
 int provjeriBroj(int sudoku[9][9], int redak, int stupac, int broj) {
 	// Provjera redaka i stupaca
 	for (int i = 0; i < 9; i++) {
@@ -120,18 +106,31 @@ int provjeriBroj(int sudoku[9][9], int redak, int stupac, int broj) {
 	return 1;  // Broj je ispravan
 }
 
-void rucniUnosSudoku(int sudoku[9][9]) {
-	time_t pocetak = time(NULL);
-	time_t trenutnoVrijeme = pocetak;
-	int praznoPolje[2];
-
-	while (!pronadiPraznoPolje(sudoku, praznoPolje)) {
-		trenutnoVrijeme = time(NULL);
-		if (trenutnoVrijeme - pocetak >= 420) {  // 7 minuta = 420 sekundi
-			printf("Vrijeme je isteklo.\n");
-			return;
+int pronadiPraznoPolje(int sudoku[9][9], int* praznoPolje) {
+	for (int i = 0; i < 9; i++) {
+		for (int j = 0; j < 9; j++) {
+			if (sudoku[i][j] == 0) {
+				*(praznoPolje) = i;
+				*(praznoPolje + 1) = j;
+				return 1;
+			}
 		}
+	}
 
+	return 0;  // Nema praznih polja
+}
+
+void rucniUnosSudoku(int sudoku[9][9]) {
+
+	int* praznoPolje = (int*)malloc(2 * sizeof(int));
+	if (praznoPolje == NULL) {
+		printf("Greška pri alokaciji memorije.");
+		return 1;
+	}
+	time_t pocetnoVrijeme = time(NULL);
+	time_t trenutnoVrijeme;
+
+	while (pronadiPraznoPolje(sudoku, praznoPolje) == 1) {
 		prikaziSudoku(sudoku);
 
 		int redak, stupac, broj;
@@ -155,6 +154,9 @@ void rucniUnosSudoku(int sudoku[9][9]) {
 
 		sudoku[redak][stupac] = broj;
 	}
+	
+	trenutnoVrijeme = time(NULL);
+	printf(" \n\nTrebalo vam je %ld sekundi da popunite tablicu.", (trenutnoVrijeme - pocetnoVrijeme));
 }
 
 void spremiVrijeme(const Podaci podaci) {
@@ -182,12 +184,3 @@ void ispisiNajboljeVrijeme(const Podaci podaci) {
 		printf("Najbolje vrijeme: %d min %d sec\n", minuta, sekunda);
 	}
 }
-
-/*void obrisiPodatke() {
-	FILE* datoteka = fopen("podaci.txt", "w");
-	if (datoteka == NULL) {
-		printf("Pogreška pri otvaranju datoteke.\n");
-		return;
-	}
-	fclose(datoteka);
-}*/

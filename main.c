@@ -5,9 +5,11 @@
 #include <time.h>
 #include"header.h"
 
+
+
 int main() {
 	int izbor;
-	int sudoku;
+	int sudoku[9][9];
 	Podaci podaci;
 	printf("Dobrodošli u Sudoku program!\n");
 	printf("Odaberite opciju:\n");
@@ -37,7 +39,7 @@ int main() {
 	scanf("%d", &izbor);
 	ocistiUnos();
 	if (izbor == 1) {
-		int sudoku[9][9] = {
+		int lagano[9][9] = {
 			{8, 2, 0, 4, 3, 9, 1, 6, 5},//7
 			{1, 3, 6, 7, 0, 2, 9, 8, 4},//5
 			{4, 5, 9, 8, 1, 6, 0, 7, 3},//2
@@ -48,8 +50,10 @@ int main() {
 			{2, 4, 1, 9, 7, 8, 5, 0, 6},//3
 			{5, 7, 3, 1, 6, 0, 8, 9, 2}//4
 		};
+		memcpy(sudoku, lagano, sizeof(sudoku));
 	}
-	if (izbor == 2) = {
+	else if (izbor == 2) {
+		int srednje[9][9] = {
 			{0, 4, 0, 1, 5, 0, 0, 8, 0},
 			{0, 0, 6, 0, 0, 7, 0, 0, 2},
 			{0, 3, 2, 0, 0, 9, 0, 4, 7},
@@ -58,10 +62,11 @@ int main() {
 			{0, 2, 0, 0, 9, 6, 0, 7, 0},
 			{0, 6, 5, 0, 0, 4, 0, 9, 8},
 			{0, 1, 0, 2, 3, 0, 0, 5, 0}
-	};
+			};
+		memcpy(sudoku, srednje, sizeof(sudoku));
 	}
 	if (izbor == 3) {
-		int sudoku[9][9] = {
+		int tesko[9][9] = {
 			{5, 3, 0, 0, 7, 0, 0, 0, 0},
 			{6, 0, 0, 1, 9, 5, 0, 0, 0},
 			{0, 9, 8, 0, 0, 0, 0, 6, 0},
@@ -72,6 +77,7 @@ int main() {
 			{0, 0, 0, 4, 1, 9, 0, 0, 5},
 			{0, 0, 0, 0, 8, 0, 0, 7, 9}
 		};
+		memcpy(sudoku, tesko, sizeof(sudoku));
 	}
 	prikaziSudoku(sudoku);
 
@@ -101,7 +107,6 @@ int main() {
 			rucniUnosSudoku(sudoku);
 			spremiVrijeme;
 			break;
-
 		case 4:
 			ispisiID(podaci.id);
 			break;
