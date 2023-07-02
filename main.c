@@ -5,12 +5,15 @@
 #include <time.h>
 #include"header.h"
 
+#define MAX_ID 5
+
 
 
 int main() {
+	char ime[20], ID[MAX_ID];
 	int izbor;
 	int sudoku[9][9];
-	Podaci podaci;
+	Podaci* podaci = calloc(1, sizeof(Podaci));
 	printf("Dobrodošli u Sudoku program!\n");
 	printf("Odaberite opciju:\n");
 	printf("1. Novi korisnik\n");
@@ -19,14 +22,41 @@ int main() {
 	scanf("%d", &izbor);
 	ocistiUnos();
 	if (izbor == 1) {
-		unesiIme(podaci.ime);
-		generirajID(podaci.id);
-		ispisiID(podaci.id);
+		printf("Unesite ime: ");
+		scanf("%s",ime);
+
+		// Generiranje ID-a
+		generirajID(ID);
+
+		// Pohrana imena i ID-a u datoteku
+		FILE* datoteka;
+		datoteka = fopen("podaci.txt", "a");
+		if (datoteka == NULL) {
+			printf("Greška pri otvaranju datoteke!\n");
+			return;
+		}
+
+		fprintf(datoteka, "%s,%s\n", ime, ID);
+
+		fclose(datoteka);
+
+		printf("Podaci su pohranjeni u datoteku.\n");
+
 	}
 	else if (izbor == 2) {
 		printf("Unesite ID: ");
-		scanf("%s", podaci.id);
+		scanf("%s", ID);
 		ocistiUnos();
+
+		// Provjera ID-a u datoteci
+		int pronaden = provjeriID(ID);
+		if (pronaden) {
+			printf("ID je pronađen u datoteci.\n");
+		}
+		else {
+			printf("ID nije pronađen u datoteci.\n");
+			return 0;
+		}
 	}
 	else {
 		printf("Pogrešan odabir. Izlaz iz programa.\n");
@@ -87,9 +117,7 @@ int main() {
 		printf("2. Automatski rjesi Sudoku\n");
 		printf("3. Ručni unos brojeva\n");
 		printf("4. Ispisi ID\n");
-		printf("5. Ispisi najbolje vrijeme\n");
-		printf("6. Obrisi sve podatke\n");
-		printf("7. Izlaz iz programa\n");
+		printf("5. Izlaz iz programa\n");
 		printf("Vaš odabir: ");
 		scanf("%d", &izbor);
 		ocistiUnos();
@@ -108,20 +136,17 @@ int main() {
 			spremiVrijeme;
 			break;
 		case 4:
-			ispisiID(podaci.id);
+			ispisiID(podaci->id);
 			break;
 		case 5:
-			ispisiNajboljeVrijeme(podaci);
-			break;
-		case 6:
-				printf("Hvala što ste koristili program. Doviđenja!\n");
-				break;
-			default:
+			printf("Hvala što ste koristili program. Doviđenja!\n");
+				exit;
+		default:
 				printf("Pogrešan odabir. Molimo odaberite ponovno.\n");
 				break;
 		}
 
-	} while (izbor != 7);
+	} while (izbor != 5);
 
 	return 0;
 }

@@ -1,28 +1,45 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
+#include "header.h"
 
-
-#define MAX_IME 20
-#define MAX_ID 5
-
-typedef struct {
-	char ime[MAX_IME];
-	char id[MAX_ID];
-	time_t vrijeme_pocetka;
-	time_t vrijeme_zavrsetka;
-	int trajanje;
-} Podaci;
 
 
 void ocistiUnos() {
 	while (getchar() != '\n');
 }
 
-void unesiIme(char ime[]) {
-	printf("Unesite svoje ime: ");
-	fgets(ime, MAX_IME, stdin);
-	ime[strcspn(ime, "\n")] = '\0'; // Uklanja znak novog reda
+void generirajID(char id[]) {
+	srand(time(NULL));
+	const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	const int charsetSize = sizeof(charset) - 1;
+	for (int i = 0; i < MAX_ID - 1; i++) {
+		id[i] = charset[rand() % charsetSize];
+	}
+	id[MAX_ID - 1] = '\0';
+}
+
+int provjeriID(char id[]) {
+	FILE* datoteka;
+	datoteka = fopen("podaci.txt", "r");
+	if (datoteka == NULL) {
+		printf("Greška pri otvaranju datoteke!\n");
+		return 0;
+	}
+
+	char linija[MAX_ID + 50];
+	while (fgets(linija, sizeof(linija), datoteka) != NULL) {
+		char* ime = strtok(linija, ",");
+		char* ID_iz_datoteke = strtok(NULL, ",");
+		if (ID_iz_datoteke != NULL && strcmp(ID_iz_datoteke, id) == 0) {
+			fclose(datoteka);
+			return 1;
+		}
+	}
+
+	fclose(datoteka);
+	return 0;
 }
 
 void prikaziSudoku(int sudoku[9][9]) {
@@ -45,16 +62,6 @@ void prikaziSudoku(int sudoku[9][9]) {
 		printf("\n");
 	}
 	printf("\n");
-}
-
-void generirajID(char id[]) {
-	srand(time(NULL));
-	const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	const int charsetSize = sizeof(charset) - 1;
-	for (int i = 0; i < MAX_ID - 1; i++) {
-		id[i] = charset[rand() % charsetSize];
-	}
-	id[MAX_ID - 1] = '\0';
 }
 
 int rjesiSudoku(int sudoku[9][9]) {
@@ -124,8 +131,8 @@ void rucniUnosSudoku(int sudoku[9][9]) {
 
 	int* praznoPolje = (int*)malloc(2 * sizeof(int));
 	if (praznoPolje == NULL) {
-		printf("Greška pri alokaciji memorije.");
-		return 1;
+		printf("Greška pri alokaciji memorije");
+		return;
 	}
 	time_t pocetnoVrijeme = time(NULL);
 	time_t trenutnoVrijeme;
@@ -157,14 +164,16 @@ void rucniUnosSudoku(int sudoku[9][9]) {
 	
 	trenutnoVrijeme = time(NULL);
 	printf(" \n\nTrebalo vam je %ld sekundi da popunite tablicu.", (trenutnoVrijeme - pocetnoVrijeme));
+	int trajanje = (trenutnoVrijeme - pocetnoVrijeme) / 100;
 }
 
 void spremiVrijeme(const Podaci podaci) {
-	FILE* datoteka = fopen("podaci.txt", "a");
+	FILE* datoteka = fopen("podaci.txt", "w");
 	if (datoteka == NULL) {
 		printf("Pogreška pri otvaranju datoteke.\n");
 		return;
 	}
+	fseek(datoteka, 20, SEEK_SET);
 	fprintf(datoteka, "%s %d\n", podaci.id, podaci.trajanje);
 	fclose(datoteka);
 }
@@ -173,14 +182,3 @@ void ispisiID(const char id[]) {
 	printf("ID korisnika: %s\n", id);
 }
 
-void ispisiNajboljeVrijeme(const Podaci podaci) {
-	if (podaci.vrijeme_zavrsetka == 0) {
-		printf("Nema zabilježenog najboljeg vremena.\n");
-	}
-	else {
-		int vrijeme = (int)(podaci.vrijeme_zavrsetka - podaci.vrijeme_pocetka);
-		int minuta = vrijeme / 60;
-		int sekunda = vrijeme % 60;
-		printf("Najbolje vrijeme: %d min %d sec\n", minuta, sekunda);
-	}
-}
