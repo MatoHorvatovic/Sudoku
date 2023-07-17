@@ -18,3 +18,4 @@ int rjesiSudoku(int sudoku[9][9]);
 void rucniUnosSudoku(int sudoku[9][9]);
 void spremiVrijeme(const Podaci podaci);
 void ispisiID(const char id[]);
+void ucitajSudokuIzDatoteke(const char* datoteka, int sudoku[9][9]);

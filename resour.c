@@ -165,20 +165,42 @@ void rucniUnosSudoku(int sudoku[9][9]) {
 	trenutnoVrijeme = time(NULL);
 	printf(" \n\nTrebalo vam je %ld sekundi da popunite tablicu.", (trenutnoVrijeme - pocetnoVrijeme));
 	int trajanje = (trenutnoVrijeme - pocetnoVrijeme) / 100;
+
 }
 
 void spremiVrijeme(const Podaci podaci) {
-	FILE* datoteka = fopen("podaci.txt", "w");
+	FILE* datoteka = fopen("podaci.txt", "r+");
 	if (datoteka == NULL) {
 		printf("Pogreška pri otvaranju datoteke.\n");
 		return;
 	}
-	fseek(datoteka, 20, SEEK_SET);
+
+	fseek(datoteka, 0, SEEK_END);
 	fprintf(datoteka, "%s %d\n", podaci.id, podaci.trajanje);
 	fclose(datoteka);
 }
+
 
 void ispisiID(const char id[]) {
 	printf("ID korisnika: %s\n", id);
 }
 
+void ucitajSudokuIzDatoteke(const char* datoteka, int sudoku[9][9]) {
+	FILE* file = fopen(datoteka, "r");
+	if (file == NULL) {
+		printf("Greška pri otvaranju datoteke '%s'!\n", datoteka);
+		return;
+	}
+
+	for (int i = 0; i < 9; i++) {
+		for (int j = 0; j < 9; j++) {
+			if (fscanf(file, "%d", &sudoku[i][j]) != 1) {
+				printf("Greška pri čitanju Sudoku broja iz datoteke '%s'!\n", datoteka);
+				fclose(file);
+				return;
+			}
+		}
+	}
+
+	fclose(file);
+}
