@@ -168,6 +168,7 @@ void rucniUnosSudoku(int sudoku[9][9]) {
 
 }
 
+
 void spremiVrijeme(const Podaci podaci) {
 	FILE* datoteka = fopen("podaci.txt", "r+");
 	if (datoteka == NULL) {
@@ -203,4 +204,36 @@ void ucitajSudokuIzDatoteke(const char* datoteka, int sudoku[9][9]) {
 	}
 
 	fclose(file);
+}
+
+void bubbleSort(Podaci* niz, int brojElemenata) {
+	int i, j;
+	Podaci temp;
+	for (i = 0; i < brojElemenata - 1; i++) {
+		for (j = 0; j < brojElemenata - i - 1; j++) {
+			if (niz[j].trajanje > niz[j + 1].trajanje) {
+				temp = niz[j];
+				niz[j] = niz[j + 1];
+				niz[j + 1] = temp;
+			}
+		}
+	}
+}
+
+int ucitajKorisnike(Podaci* podaci) {
+	FILE* datoteka = fopen("podaci.txt", "r");
+	if (datoteka == NULL) {
+		printf("Greška pri otvaranju datoteke 'podaci.txt'!\n");
+		return 0;
+	}
+
+	int brojKorisnika = 0;
+
+	while (fscanf(datoteka, "%s %d", podaci[brojKorisnika].id, &podaci[brojKorisnika].trajanje) != EOF) {
+		brojKorisnika++;
+	}
+
+	fclose(datoteka);
+
+	return brojKorisnika;
 }

@@ -14,10 +14,10 @@ int main() {
 	int izbor;
 	int sudoku[9][9];
 	Podaci* podaci = calloc(1, sizeof(Podaci));
-	printf("Dobrodošli u Sudoku program!\n");
+	printf("Dobrodosli u Sudoku program!\n");
 	printf("Odaberite opciju:\n");
 	printf("1. Novi korisnik\n");
-	printf("2. Prijašnji korisnik\n");
+	printf("2. Prijasnji korisnik\n");
 	printf("Vaš odabir: ");
 	scanf("%d", &izbor);
 	ocistiUnos();
@@ -32,7 +32,7 @@ int main() {
 		FILE* datoteka;
 		datoteka = fopen("podaci.txt", "a");
 		if (datoteka == NULL) {
-			printf("Greška pri otvaranju datoteke!\n");
+			printf("Greska pri otvaranju datoteke!\n");
 			return;
 		}
 
@@ -51,15 +51,15 @@ int main() {
 		// Provjera ID-a u datoteci
 		int pronaden = provjeriID(ID);
 		if (pronaden) {
-			printf("ID je pronađen u datoteci.\n");
+			printf("ID je pronaden u datoteci.\n");
 		}
 		else {
-			printf("ID nije pronađen u datoteci.\n");
+			printf("ID nije pronaden u datoteci.\n");
 			return 0;
 		}
 	}
 	else {
-		printf("Pogrešan odabir. Izlaz iz programa.\n");
+		printf("Pogresan odabir. Izlaz iz programa.\n");
 		return 0;
 	}
 	printf("Odaberite razinu težine\n");
@@ -83,9 +83,10 @@ int main() {
 		printf("\nOdaberite opciju:\n");
 		printf("1. Prikazi Sudoku zadatak\n");
 		printf("2. Automatski rjesi Sudoku\n");
-		printf("3. Ručni unos brojeva\n");
+		printf("3. Rucni unos brojeva\n");
 		printf("4. Ispisi ID\n");
-		printf("5. Izlaz iz programa\n");
+		printf("5. Ispisi sve korisnike sortirane po vremenu\n");
+		printf("6. Izlaz iz programa\n");
 		printf("Vaš odabir: ");
 		scanf("%d", &izbor);
 		ocistiUnos();
@@ -101,20 +102,33 @@ int main() {
 			break;
 		case 3:
 			rucniUnosSudoku(sudoku);
-			spremiVrijeme;
+			spremiVrijeme(*podaci);
 			break;
 		case 4:
 			ispisiID(podaci->id);
 			break;
 		case 5:
-			printf("Hvala što ste koristili program. Doviđenja!\n");
-				exit;
+			printf("Korisnici sortirani po vremenu:\n");
+			int brojKorisnika = ucitajKorisnike(podaci);
+			if (brojKorisnika > 0) {
+				bubbleSort(podaci, brojKorisnika);
+				for (int i = 0; i < brojKorisnika; i++) {
+					printf("ID: %s, Trajanje: %d sekundi\n", podaci[i].id, podaci[i].trajanje);
+				}
+			}
+			else {
+				printf("Nema korisnika za ispis.\n");
+			}
+			break;
+		case 6:
+			printf("Hvala sto ste koristili program. Doviđenja!\n");
+			exit(0);
 		default:
-				printf("Pogrešan odabir. Molimo odaberite ponovno.\n");
-				break;
+			printf("Pogrešan odabir. Molimo odaberite ponovno.\n");
+			break;
 		}
 
-	} while (izbor != 5);
+	} while (izbor != 6);
 
 	return 0;
 }
